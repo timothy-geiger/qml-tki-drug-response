@@ -1,0 +1,48 @@
+name: pytest-unit-tests
+
+on: [push]
+
+jobs:
+  pytest:
+    name: ${{ matrix.name }}
+    runs-on: "${{ matrix.os }}"
+
+    strategy:
+      matrix:
+        name: [
+           python38-ubuntu2204,
+           python39-ubuntu2204,
+           python310-ubuntu2204
+        ]
+        include:
+
+        - name: python38-ubuntu2204
+          python-version: 3.8
+          os: ubuntu-22.04
+
+        - name: python39-ubuntu2204
+          python-version: 3.9
+          os: ubuntu-22.04
+
+        - name: python310-ubuntu2204
+          python-version: '3.10'
+          os: ubuntu-22.04
+
+    steps:
+    - name: Checkout lung_cancer
+      uses: actions/checkout@v2
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        pip install --upgrade pip
+        pip install -e .
+        pip install -r requirements.txt
+
+    - name: Test with pytest
+      run: |
+        pytest tests/
